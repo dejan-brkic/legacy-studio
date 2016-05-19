@@ -17,6 +17,7 @@
  ******************************************************************************/
 package org.craftercms.cstudio.alfresco.dm.service.impl;
 
+import org.craftercms.cstudio.alfresco.dm.service.api.DmDependencyService;
 import org.craftercms.cstudio.alfresco.dm.to.DmDependencyTO;
 import org.craftercms.cstudio.alfresco.service.ServicesManager;
 import org.craftercms.cstudio.alfresco.service.api.PersistenceManagerService;
@@ -25,6 +26,8 @@ import org.craftercms.cstudio.alfresco.service.api.ServicesConfig;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DependencyRules {
 
@@ -39,6 +42,7 @@ public class DependencyRules {
 
     public Set<DmDependencyTO> applySubmitRule(DmDependencyTO submittedItem){
         ServicesConfig servicesConfig = servicesManager.getService(ServicesConfig.class);
+        DmDependencyService dmDependencyService = servicesManager.getService(DmDependencyService.class);
         String siteRoot = servicesConfig.getRepositoryRootPath(_site);
         PersistenceManagerService persistenceManagerService = servicesManager.getService(PersistenceManagerService.class);
         Set<DmDependencyTO> dependencies = new HashSet<DmDependencyTO>();
@@ -46,11 +50,27 @@ public class DependencyRules {
             for (DmDependencyTO document : submittedItem.getDocuments()) {
                 String fullPath = siteRoot + document.getUri();
                 if (persistenceManagerService.isUpdatedOrNew(fullPath)) {
-                    document.setNow(submittedItem.isNow());
-                    document.setScheduledDate(submittedItem.getScheduledDate());
-                    document.setSubmitted(true);
-                    dependencies.add(document);
+                    boolean addDep = false;
+                    if (persistenceManagerService.isNew(fullPath)) {
+                        addDep = true;
+                    } else {
+                        for (String contentSpecificDependency : dmDependencyService.getContentSpecificDependencies()) {
+                            Pattern p = Pattern.compile(contentSpecificDependency);
+                            Matcher m = p.matcher(document.getUri());
+                            if (m.matches()) {
+                                addDep = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (addDep) {
+                        document.setNow(submittedItem.isNow());
+                        document.setScheduledDate(submittedItem.getScheduledDate());
+                        document.setSubmitted(true);
+                        dependencies.add(document);
+                    }
                 }
+
                 Set<DmDependencyTO> dependencyTOSet = applySubmitRule(document);
                 dependencies.addAll(dependencyTOSet);
             }
@@ -60,11 +80,25 @@ public class DependencyRules {
             for (DmDependencyTO component : submittedItem.getComponents()) {
                 String fullPath = siteRoot + component.getUri();
                 if (persistenceManagerService.isUpdatedOrNew(fullPath)) {
-                    component.setNow(submittedItem.isNow());
-                    component.setScheduledDate(submittedItem.getScheduledDate());
-                    component.setSubmitted(true);
-                    dependencies.add(component);
-
+                    boolean addDep = false;
+                    if (persistenceManagerService.isNew(fullPath)) {
+                        addDep = true;
+                    } else {
+                        for (String contentSpecificDependency : dmDependencyService.getContentSpecificDependencies()) {
+                            Pattern p = Pattern.compile(contentSpecificDependency);
+                            Matcher m = p.matcher(component.getUri());
+                            if (m.matches()) {
+                                addDep = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (addDep) {
+                        component.setNow(submittedItem.isNow());
+                        component.setScheduledDate(submittedItem.getScheduledDate());
+                        component.setSubmitted(true);
+                        dependencies.add(component);
+                    }
                 }
                 Set<DmDependencyTO> dependencyTOSet = applySubmitRule(component);
                 dependencies.addAll(dependencyTOSet);
@@ -76,11 +110,25 @@ public class DependencyRules {
             for (DmDependencyTO asset : submittedItem.getAssets()) {
                 String fullPath = siteRoot + asset.getUri();
                 if (persistenceManagerService.isUpdatedOrNew(fullPath)) {
-                    dependencies.add(asset);
-                    asset.setNow(submittedItem.isNow());
-                    asset.setScheduledDate(submittedItem.getScheduledDate());
-                    asset.setSubmitted(true);
-
+                    boolean addDep = false;
+                    if (persistenceManagerService.isNew(fullPath)) {
+                        addDep = true;
+                    } else {
+                        for (String contentSpecificDependency : dmDependencyService.getContentSpecificDependencies()) {
+                            Pattern p = Pattern.compile(contentSpecificDependency);
+                            Matcher m = p.matcher(asset.getUri());
+                            if (m.matches()) {
+                                addDep = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (addDep) {
+                        asset.setNow(submittedItem.isNow());
+                        asset.setScheduledDate(submittedItem.getScheduledDate());
+                        asset.setSubmitted(true);
+                        dependencies.add(asset);
+                    }
                 }
                 Set<DmDependencyTO> dependencyTOSet = applySubmitRule(asset);
                 dependencies.addAll(dependencyTOSet);
@@ -92,11 +140,25 @@ public class DependencyRules {
             for (DmDependencyTO template : submittedItem.getRenderingTemplates()) {
                 String fullPath = siteRoot + template.getUri();
                 if (persistenceManagerService.isUpdatedOrNew(fullPath)) {
-                    dependencies.add(template);
-                    template.setNow(submittedItem.isNow());
-                    template.setScheduledDate(submittedItem.getScheduledDate());
-                    template.setSubmitted(true);
-
+                    boolean addDep = false;
+                    if (persistenceManagerService.isNew(fullPath)) {
+                        addDep = true;
+                    } else {
+                        for (String contentSpecificDependency : dmDependencyService.getContentSpecificDependencies()) {
+                            Pattern p = Pattern.compile(contentSpecificDependency);
+                            Matcher m = p.matcher(template.getUri());
+                            if (m.matches()) {
+                                addDep = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (addDep) {
+                        template.setNow(submittedItem.isNow());
+                        template.setScheduledDate(submittedItem.getScheduledDate());
+                        template.setSubmitted(true);
+                        dependencies.add(template);
+                    }
                 }
                 Set<DmDependencyTO> dependencyTOSet = applySubmitRule(template);
                 dependencies.addAll(dependencyTOSet);
@@ -108,10 +170,25 @@ public class DependencyRules {
             for (DmDependencyTO ld : submittedItem.getLevelDescriptors()) {
                 String fullPath = siteRoot + ld.getUri();
                 if (persistenceManagerService.isUpdatedOrNew(fullPath)) {
-                    dependencies.add(ld);
-                    ld.setNow(submittedItem.isNow());
-                    ld.setScheduledDate(submittedItem.getScheduledDate());
-                    ld.setSubmitted(true);
+                    boolean addDep = false;
+                    if (persistenceManagerService.isNew(fullPath)) {
+                        addDep = true;
+                    } else {
+                        for (String contentSpecificDependency : dmDependencyService.getContentSpecificDependencies()) {
+                            Pattern p = Pattern.compile(contentSpecificDependency);
+                            Matcher m = p.matcher(ld.getUri());
+                            if (m.matches()) {
+                                addDep = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (addDep) {
+                        ld.setNow(submittedItem.isNow());
+                        ld.setScheduledDate(submittedItem.getScheduledDate());
+                        ld.setSubmitted(true);
+                        dependencies.add(ld);
+                    }
                 }
                 Set<DmDependencyTO> dependencyTOSet = applySubmitRule(ld);
                 dependencies.addAll(dependencyTOSet);

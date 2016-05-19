@@ -172,4 +172,6 @@ public interface DmDependencyService {
     public List<String> getDependencyPaths(String site, String path);
 
 	Set<DmDependencyTO> getDeleteDependencies(String site, String sourceContentPath, String dependencyPath, boolean isLiveRepo) throws ServiceException;
+
+    List<String> getContentSpecificDependencies();
 }
