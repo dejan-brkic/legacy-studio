@@ -190,6 +190,7 @@
         <property name="dependencyDaoService" ref="cstudioDependencyDaoService" />
         <property name="cacheManager" ref="cstudioCacheManager" />
         <property name="ignoreDependenciesRules" value="#{'${dmDependenciesService.ignoreDependenciesRules}'.split(',')}"/>
+        <property name="contentSpecificDependencies" value="#{'${dmDependenciesService.contentSpecificDependencies}'.split(',')}"/>
     </bean>
 
        <bean id="cstudioDmDependencyDiffService" class="org.craftercms.cstudio.alfresco.dm.service.impl.DmDependencyDiffService"

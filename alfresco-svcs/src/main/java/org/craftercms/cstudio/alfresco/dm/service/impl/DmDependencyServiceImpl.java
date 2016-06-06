@@ -104,6 +104,10 @@ public class DmDependencyServiceImpl extends AbstractRegistrableService implemen
         this._ignoreDependenciesRules = ignoreDependenciesRules;
     }
 
+    protected List<String> contentSpecificDependencies = new FastList<String>();
+    public List<String> getContentSpecificDependencies() { return contentSpecificDependencies; }
+    public void setContentSpecificDependencies(List<String> contentSpecificDependencies) { this.contentSpecificDependencies = contentSpecificDependencies; }
+
     @Override
     public void register() {
         getServicesManager().registerService(DmDependencyService.class, this);
